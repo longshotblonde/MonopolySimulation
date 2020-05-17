@@ -1,0 +1,695 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Monopoly</title>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+
+	<script src="jquery.js"></script>
+	<script type="text/javascript" src="classicedition.js"></script>
+	<!-- Comment out the previous line and uncomment the next one to enable the New York City Edition -->
+	<!-- <script type="text/javascript" src="newyorkcityedition.js"></script> -->
+	<script type="text/javascript" src="ai.js"></script>
+	<script type="text/javascript" src="monopoly.js"></script>
+	<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+
+<body>
+	<div id="popupbackground"></div>
+	<div id="popupwrap">
+		<div id="popup">
+			<div style="position: relative;">
+				<!-- <img id="popupclose" src="Images/close.png" title="Close" alt="x" onclick="hide('popupbackground'); hide('popupwrap');" /> -->
+				<div id="popuptext"></div>
+				<div id="popupdrag"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="statsbackground"></div>
+	<div id="statswrap">
+		<div id="stats">
+			<div style="position: relative;">
+				<img id="statsclose" src="images/close.png" title="Close" alt="x" />
+				<div id="statstext"></div>
+				<div id="statsdrag"></div>
+			</div>
+		</div>
+	</div>
+
+	<p id="noscript">
+		Note: This page will not function without JavaScript.
+	</p>
+
+	<div id="refresh">
+		Refresh this page to start a new game.
+	</div>
+
+	<!-- <div id="enlarge"></div> -->
+
+	<div id="deed">
+		<div id="deed-normal" style="display: none;">
+			<div id="deed-header">
+				<div style="margin: 5px; font-size: 11px;">T I T L E&nbsp;&nbsp;D E E D</div>
+				<div id="deed-name"></div>
+			</div>
+			<table id="deed-table">
+				<tr>
+					<td colspan="2">
+						RENT&nbsp;$<span id="deed-baserent">12</span>.
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 1 House</td>
+					<td style="text-align: right;">$&nbsp;&nbsp;&nbsp;<span id="deed-rent1">60</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 2 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent2">180</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 3 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent3">500</span>.</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">With 4 Houses</td>
+					<td style="text-align: right;"><span id="deed-rent4">700</span>.</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div style="margin-bottom: 8px;">With HOTEL $<span id="deed-rent5">900</span>.</div>
+						<div>Mortgage Value $<span id="deed-mortgage">80</span>.</div>
+						<div>Houses cost $<span id="deed-houseprice">100</span>. each</div>
+						<div>Hotels, $<span id="deed-hotelprice">100</span>. plus 4 houses</div>
+						<div style="font-size: 9px; font-style: italic; margin-top: 5px;">If a player owns ALL the Lots of any Color-Group, the rent is Doubled on Unimproved Lots in that group.</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="deed-mortgaged">
+			<div id="deed-mortgaged-name"></div>
+			<p>&bull;</p>
+			<div>MORTGAGED</div>
+			<div> for $<span id="deed-mortgaged-mortgage">80</span></div>
+			<p>&bull;</p>
+			<div style="font-style: italic; font-size: 13px; margin: 10px;">Card must be turned this side up if property is mortgaged</div>
+		</div>
+
+		<div id="deed-special">
+			<div id="deed-special-name"></div>
+			<div id="deed-special-text"></div>
+			<div id="deed-special-footer">
+				Mortgage Value
+				<span style="float: right;">$<span id="deed-special-mortgage">100</span>.</span>
+			</div>
+		</div>
+	</div>
+
+	<table id="board">
+		<tr>
+			<td class="cell board-corner" id="cell20"></td>
+			<td class="cell board-top" id="cell21"></td>
+			<td class="cell board-top" id="cell22"></td>
+			<td class="cell board-top" id="cell23"></td>
+			<td class="cell board-top" id="cell24"></td>
+			<td class="cell board-top" id="cell25"></td>
+			<td class="cell board-top" id="cell26"></td>
+			<td class="cell board-top" id="cell27"></td>
+			<td class="cell board-top" id="cell28"></td>
+			<td class="cell board-top" id="cell29"></td>
+			<td class="cell board-corner" id="cell30"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell19"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell31"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell18"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell32"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell17"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell33"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell16"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell34"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell15"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell35"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell14"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell36"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell13"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell37"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell12"></td>
+			<td colspan="9" class="board-center"></td>
+			<td class="cell board-right" id="cell38"></td>
+		</tr><tr>
+			<td class="cell board-left" id="cell11"></td>
+			<td colspan="9" class="board-center">
+				<div id="jail"></div>
+			</td>
+			<td class="cell board-right" id="cell39"></td>
+		</tr><tr>
+			<td class="cell board-corner" id="cell10"></td>
+			<td class="cell board-bottom" id="cell9"></td>
+			<td class="cell board-bottom" id="cell8"></td>
+			<td class="cell board-bottom" id="cell7"></td>
+			<td class="cell board-bottom" id="cell6"></td>
+			<td class="cell board-bottom" id="cell5"></td>
+			<td class="cell board-bottom" id="cell4"></td>
+			<td class="cell board-bottom" id="cell3"></td>
+			<td class="cell board-bottom" id="cell2"></td>
+			<td class="cell board-bottom" id="cell1"></td>
+			<td class="cell board-corner" id="cell0"></td>
+		</tr>
+	</table>
+
+	<div id="moneybarwrap">
+		<div id="moneybar">
+			<table>
+				<tr id="moneybarrow0" class="money-bar-row">
+
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p0arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p0moneybar" class="moneybarcell">
+						<div><span id="p0moneyname" >Player 0</span>:</div>
+						<div>$<span id="p0money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow1" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p1arrow" class="money-bar-arrow" alt=">"/></td>
+					<td id="p1moneybar" class="moneybarcell">
+						<div><span id="p1moneyname" >Player 1</span>:</div>
+						<div>$<span id="p1money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow2" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p2arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p2moneybar" class="moneybarcell">
+						<div><span id="p2moneyname" >Player 2</span>:</div>
+						<div>$<span id="p2money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow3" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p3arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p3moneybar" class="moneybarcell">
+						<div><span id="p3moneyname" >Player 3</span>:</div>
+						<div>$<span id="p3money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow4" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p4arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p4moneybar" class="moneybarcell">
+						<div><span id="p4moneyname" >Player 4</span>:</div>
+						<div>$<span id="p4money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow5" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p5arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p5moneybar" class="moneybarcell">
+						<div><span id="p5moneyname" >Player 5</span>:</div>
+						<div>$<span id="p5money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow6" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p6arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p6moneybar" class="moneybarcell">
+						<div><span id="p6moneyname" >Player 6</span>:</div>
+						<div>$<span id="p6money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow7" class="money-bar-row">
+					<td class="moneybararrowcell"><img src="images/arrow.png" id="p7arrow" class="money-bar-arrow" alt=">" /></td>
+					<td id="p7moneybar" class="moneybarcell">
+						<div><span id="p7moneyname" >Player 7</span>:</div>
+						<div>$<span id="p7money">1500</span></div>
+					</td>
+				</tr>
+				<tr id="moneybarrow8">
+					<td style="border: none;" class="moneybararrowcell">&nbsp;</td>
+					<td style="border: none;">
+						<input type="button" id="viewstats" value="View stats" title="View a pop-up window that shows a list of each player's properties." />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="setup">
+		<div style="margin-bottom: 20px; display:none;">
+			Select number of players.
+			<select id="playernumber" title="Select the number of players for the game.">
+				<option selected="selected">2</option>
+			</select>
+		</div>
+
+		<div id="player1input" class="player-input" style="display:block; float:left; width:50%;">
+			AI 1: <input type="text" id="player1name" title="Player name" maxlength="16" value="Player 1" />
+			<select id="player1color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option style="color: teal;">Teal</option>
+				<option selected="selected" style="color: yellow;">Yellow</option>
+			</select>
+
+			<div>
+				Starting Money: <input type="text" id="player1startmoney" value="1500">
+			</div>
+
+			<div>
+				<input type="checkbox" id="Mediterranean Avenue1" name="Mediterranean Avenue" value="1">
+				<label for="Mediterranean Avenue1">Mediterranean Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Baltic Avenue1" name="Baltic Avenue" value="3">
+				<label for="Baltic Avenue1">Baltic Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Reading Railroad1" name="Reading Railroad" value="5">
+				<label for="Reading Railroad1">Reading Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Oriental Avenue1" name="Oriental Avenue" value="6">
+				<label for="Oriental Avenue1">Oriental Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Vermont Avenue1" name="Vermont Avenue" value="8">
+				<label for="Vermont Avenue1">Vermont Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Connecticut Avenue1" name="Connecticut Avenue" value="9">
+				<label for="Connecticut Avenue1">Connecticut Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="St. Charles Place1" name="St. Charles Place" value="11">
+				<label for="St. Charles Place1">St. Charles Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Electric Company1" name="Electric Company" value="12">
+				<label for="Electric Company1">Electric Company</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="States Avenue1" name="States Avenue" value="13">
+				<label for="States Avenue1">States Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Virginia Avenue1" name="Virginia Avenue" value="14">
+				<label for="Virginia Avenue1">Virginia Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pennsylvania Railroad1" name="Pennsylvania Railroad" value="15">
+				<label for="Pennsylvania Railroad1">Pennsylvania Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="St. James Place1" name="St. James Place" value="16">
+				<label for="St. James Place1">St. James Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Tennessee Avenue1" name="Tennessee Avenue" value="18">
+				<label for="Tennessee Avenue1">Tennessee Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="New York Avenue1" name="New York Avenue" value="19">
+				<label for="New York Avenue1">New York Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Kentucky Avenue1" name="Kentucky Avenue" value="21">
+				<label for="Kentucky Avenue1">Kentucky Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Indiana Avenue1" name="Indiana Avenue" value="23">
+				<label for="Indiana Avenue1">Indiana Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Illinois Avenue1" name="Illinois Avenue" value="24">
+				<label for="Illinois Avenue1">Illinois Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="B&O Railroad1" name="B&O Railroad" value="25">
+				<label for="B&O Railroad1">B&O Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Atlantic Avenue1" name="Atlantic Avenue" value="26">
+				<label for="Atlantic Avenue1">Atlantic Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Ventnor Avenue1" name="Ventnor Avenue" value="27">
+				<label for="Ventnor Avenue1">Ventnor Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Water Works1" name="Water Works" value="28">
+				<label for="Water Works1">Water Works</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Marvin Gardens1" name="Marvin Gardens" value="29">
+				<label for="Marvin Gardens1">Marvin Gardens</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pacific Avenue1" name="Pacific Avenue" value="31">
+				<label for="Pacific Avenue1">Pacific Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="North Carolina Avenue1" name="North Carolina Avenue" value="32">
+				<label for="North Carolina Avenue1">North Carolina Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pennsylvania Avenue1" name="Pennsylvania Avenue" value="34">
+				<label for="Pennsylvania Avenue1">Pennsylvania Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Short Line1" name="Short Line" value="35">
+				<label for="Short Line1">Short Line</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Park Place1" name="Park Place" value="37">
+				<label for="Park Place1">Park Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Boardwalk1" name="Boardwalk" value="39">
+				<label for="Boardwalk1">Boardwalk</label>
+			</div>
+
+			<select id="player1ai" title="Choose whether this player is controled by a human or by the computer." hidden>
+				<option value="1" selected="selected">AI 1</option>
+			</select>
+		</div>
+
+		<div id="player2input" class="player-input">
+			AI 2: <input type="text" id="player2name" title="Player name" maxlength="16" value="Player 2" />
+			<select id="player2color" title="Player color">
+				<option style="color: aqua;">Aqua</option>
+				<option style="color: black;">Black</option>
+				<option style="color: blue;">Blue</option>
+				<option style="color: fuchsia;">Fuchsia</option>
+				<option style="color: gray;">Gray</option>
+				<option style="color: green;">Green</option>
+				<option style="color: lime;">Lime</option>
+				<option style="color: maroon;">Maroon</option>
+				<option style="color: navy;">Navy</option>
+				<option style="color: olive;">Olive</option>
+				<option style="color: orange;">Orange</option>
+				<option style="color: purple;">Purple</option>
+				<option style="color: red;">Red</option>
+				<option style="color: silver;">Silver</option>
+				<option selected="selected" style="color: teal;">Teal</option>
+				<option style="color: yellow;">Yellow</option>
+			</select>
+
+			<div>
+				Starting Money: <input type="text" id="player2startmoney" value="1500">
+			</div>
+
+			<div>
+				<input type="checkbox" id="Mediterranean Avenue2" name="Mediterranean Avenue" value="1">
+				<label for="Mediterranean Avenue2">Mediterranean Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Baltic Avenue2" name="Baltic Avenue" value="3">
+				<label for="Baltic Avenue2">Baltic Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Reading Railroad2" name="Reading Railroad" value="5">
+				<label for="Reading Railroad2">Reading Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Oriental Avenue2" name="Oriental Avenue" value="6">
+				<label for="Oriental Avenue2">Oriental Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Vermont Avenue2" name="Vermont Avenue" value="8">
+				<label for="Vermont Avenue2">Vermont Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Connecticut Avenue2" name="Connecticut Avenue" value="9">
+				<label for="Connecticut Avenue2">Connecticut Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="St. Charles Place2" name="St. Charles Place" value="11">
+				<label for="St. Charles Place2">St. Charles Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Electric Company2" name="Electric Company" value="12">
+				<label for="Electric Company2">Electric Company</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="States Avenue2" name="States Avenue" value="13">
+				<label for="States Avenue2">States Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Virginia Avenue2" name="Virginia Avenue" value="14">
+				<label for="Virginia Avenue2">Virginia Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pennsylvania Railroad2" name="Pennsylvania Railroad" value="15">
+				<label for="Pennsylvania Railroad2">Pennsylvania Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="St. James Place2" name="St. James Place" value="16">
+				<label for="St. James Place2">St. James Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Tennessee Avenue2" name="Tennessee Avenue" value="18">
+				<label for="Tennessee Avenue2">Tennessee Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="New York Avenue2" name="New York Avenue" value="19">
+				<label for="New York Avenue2">New York Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Kentucky Avenue2" name="Kentucky Avenue" value="21">
+				<label for="Kentucky Avenue2">Kentucky Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Indiana Avenue2" name="Indiana Avenue" value="23">
+				<label for="Indiana Avenue2">Indiana Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Illinois Avenue2" name="Illinois Avenue" value="24">
+				<label for="Illinois Avenue2">Illinois Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="B&O Railroad2" name="B&O Railroad" value="25">
+				<label for="B&O Railroad2">B&O Railroad</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Atlantic Avenue2" name="Atlantic Avenue" value="26">
+				<label for="Atlantic Avenue2">Atlantic Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Ventnor Avenue2" name="Ventnor Avenue" value="27">
+				<label for="Ventnor Avenue2">Ventnor Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Water Works2" name="Water Works" value="28">
+				<label for="Water Works2">Water Works</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Marvin Gardens2" name="Marvin Gardens" value="29">
+				<label for="Marvin Gardens2">Marvin Gardens</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pacific Avenue2" name="Pacific Avenue" value="31">
+				<label for="Pacific Avenue2">Pacific Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="North Carolina Avenue2" name="North Carolina Avenue" value="32">
+				<label for="North Carolina Avenue2">North Carolina Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Pennsylvania Avenue2" name="Pennsylvania Avenue" value="34">
+				<label for="Pennsylvania Avenue2">Pennsylvania Avenue</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Short Line2" name="Short Line" value="35">
+				<label for="Short Line2">Short Line</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Park Place2" name="Park Place" value="37">
+				<label for="Park Place2">Park Place</label>
+			</div>
+
+			<div>
+				<input type="checkbox" id="Boardwalk2" name="Boardwalk" value="39">
+				<label for="Boardwalk2">Boardwalk</label>
+			</div>
+
+			<select id="player2ai" title="Choose whether this player is controled by a human or by the computer." hidden>
+				<option value="1" selected="selected">AI 2</option>
+			</select>
+		</div>
+
+		
+
+		<div style="margin: 20px 0px;">
+			<input type="button" value="Start Game" onclick="setup();" title="Begin playing." />
+		</div>
+
+		<div id="noF5">Note: Refreshing this page or navigating away from it may end your game without warning.</div>
+	</div>
+
+	<div id="control">
+		<table>
+			<tr>
+				<td style="text-align: left; vertical-align: top; border: none;">
+					<div id="menu">
+						<table id="menutable" cellspacing="0">
+							<tr>
+								<td class="menu-item" id="buy-menu-item">
+
+									<a href="javascript:void(0);" title="View alerts and buy the property you landed on.">Buy</a>
+								</td>
+								<td class="menu-item" id="manage-menu-item">
+
+									<a href="javascript:void(0);" title="View, mortgage, and improve your property. ">Manage</a>
+								</td>
+								<td class="menu-item" id="trade-menu-item">
+
+									<a href="javascript:void(0);" title="Exchange property with other players.">Trade</a>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<div id="buy">
+						<div id="alert"></div>
+						<div id="landed"></div>
+					</div>
+
+					<div id="manage">
+						<div id="option">
+							<div id="buildings" title="Available buildings"></div>
+							<input type="button" value="Buy house" id="buyhousebutton"/>
+							<input type="button" value="Mortgage" id="mortgagebutton" />
+							<input type="button" value="Sell house" id="sellhousebutton"/>
+						</div>
+						<div id="owned"></div>
+					</div>
+				</td>
+				<td style="vertical-align: top; border: none;">
+					<div id="quickstats" style="">
+							<div><span id="pname" >Player 1</span>:</div>
+							<div><span id="pmoney">$1500</span></div>
+					</div>
+					<div>
+						<div id="die0" title="Die" class="die die-no-img"></div>
+						<div id="die1" title="Die" class="die die-no-img"></div>
+					</div>
+
+				</td>
+			</tr><tr>
+				<td colspan="2" style="border: none">
+					<div style="padding-top: 8px;">
+						<input type="button" id="nextbutton" title="Roll the dice and move your token accordingly." value="Roll Dice"/>
+						<input type="button" id="resignbutton" title="If you cannot pay your debt then you must resign from the game." value="Resign" onclick="game.resign();" />
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="trade">
+		<table style="border-spacing: 3px;">
+			<tr>
+				<td class="trade-cell">
+					<div id="trade-leftp-name"></div>
+				</td>
+				<td class="trade-cell">
+					<div id="trade-rightp-name"></div>
+				</td>
+			</tr>
+			<tr>
+				<td class="trade-cell">
+					$&nbsp;<input id="trade-leftp-money" value="0" title="Enter amount to exchange with the other player." />
+				</td>
+				<td class="trade-cell">
+					$&nbsp;<input id="trade-rightp-money" value="0" title="Enter amount to exchange with the other player." />
+				</td>
+			</tr>
+			<tr>
+				<td id="trade-leftp-property" class="trade-cell"></td>
+				<td id="trade-rightp-property" class="trade-cell"></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="trade-cell">
+					<input type="button" id="proposetradebutton" value="Propose Trade" onclick="game.proposeTrade();" title="Exchange the money and properties that are checked above." />
+					<input type="button" id="canceltradebutton" value="Cancel Trade" onclick='game.cancelTrade();' title="Cancel the trade." />
+					<input type="button" id="accepttradebutton" value="Accept Trade" onclick="game.acceptTrade();" title="Accept the proposed trade." />
+					<input type="button" id="rejecttradebutton" value="Reject Trade" onclick='game.cancelTrade();' title="Reject the proposed trade." />
+				</td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+</html>
